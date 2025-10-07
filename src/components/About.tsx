@@ -65,7 +65,7 @@ const About = () => {
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-accent mt-1">•</span>
-                    <span>أمين حزب مستقبل وطن (2018 - 2024)</span>
+                    <span>أمين حزب مستقبل وطن -اطفيح(2018 - 2024)</span>
                   </li>
                 </ul>
               </div>
