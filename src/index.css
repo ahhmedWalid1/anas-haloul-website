@@ -1,0 +1,115 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+
+    /* Primary: مستقبل وطن - الأزرق */
+    --primary: 220 85% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 220 85% 38%;
+
+    /* Secondary: فاتح */
+    --secondary: 0 0% 95%;
+    --secondary-foreground: 220 85% 45%;
+
+    /* Accent: الذهبي للتميز */
+    --accent: 42 95% 55%;
+    --accent-foreground: 0 0% 10%;
+
+    /* Egyptian Flag Colors */
+    --egyptian-red: 0 85% 45%;
+    --egyptian-white: 0 0% 100%;
+    --egyptian-black: 0 0% 10%;
+    --egyptian-gold: 42 95% 55%;
+
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 40%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 220 85% 45%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 0 0% 10%;
+    --sidebar-primary: 220 85% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 95%;
+    --sidebar-accent-foreground: 220 85% 45%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 220 85% 45%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 12%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 12%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 220 85% 60%;
+    --primary-foreground: 0 0% 100%;
+    --primary-hover: 220 85% 50%;
+
+    --secondary: 0 0% 18%;
+    --secondary-foreground: 0 0% 98%;
+
+    --accent: 42 95% 60%;
+    --accent-foreground: 0 0% 10%;
+
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
+    --ring: 220 85% 60%;
+
+    --sidebar-background: 0 0% 10%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 220 85% 60%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 0 0% 18%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 0 0% 18%;
+    --sidebar-ring: 220 85% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-cairo;
+    direction: rtl;
+  }
+  
+  html {
+    direction: rtl;
+  }
+}
