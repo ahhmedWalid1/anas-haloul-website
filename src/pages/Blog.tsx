@@ -174,9 +174,7 @@ const Blog = () => {
                   );
                 })}
               </div>
-            <div className="mt-10 text-center">
-              <a href="/admin/blog" className="text-sm text-muted-foreground hover:text-primary">لوحة إدارة المدونة</a>
-            </div>
+           
           </div>
         </section>
       </main>
