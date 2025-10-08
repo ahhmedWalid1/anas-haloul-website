@@ -27,7 +27,7 @@ const Navbar = () => {
                 أنس هلول
               </span>
               <span className="text-xs md:text-sm text-accent font-semibold">
-                مرشح مجلس النواب - أطفيح
+                مرشح مجلس النواب (فردي) – مستقبل وطن – الرمز: القلم
               </span>
             </div>
           </Link>

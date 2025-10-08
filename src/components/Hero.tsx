@@ -18,7 +18,7 @@ const Hero = () => {
         <div className="max-w-3xl">
           <div className="inline-block mb-4 px-4 py-2 bg-accent/20 border-2 border-accent rounded-full">
             <span className="text-accent font-bold text-sm md:text-base">
-              مرشح مجلس النواب المصري
+              مرشح مجلس النواب المصري (فردي) – حزب مستقبل وطن – الرمز: القلم
             </span>
           </div>
           
@@ -28,6 +28,11 @@ const Hero = () => {
           
           <p className="text-xl md:text-2xl text-accent font-semibold mb-4 animate-fade-in">
             دائرة أطفيح - محافظة الجيزة
+          </p>
+          
+          <p className="text-base md:text-lg text-primary-foreground/95 mb-6 animate-fade-in">
+            يعلن المرشح أنس هلول ترشحه لانتخابات مجلس النواب عن دائرة أطفيح بنظام الفردي،
+            تحت مظلة حزب مستقبل وطن، وبالرمز الانتخابي: القلم.
           </p>
           
           <p className="text-lg md:text-xl text-primary-foreground/90 mb-8 leading-relaxed animate-fade-in">
@@ -41,7 +46,7 @@ const Hero = () => {
               size="lg"
               className="bg-accent hover:bg-accent/90 text-accent-foreground font-bold text-lg px-8 py-6 transition-all duration-300 hover:scale-105"
             >
-              <Link to="/complaints">تواصل معنا</Link>
+              <Link to="/contact">تواصل معنا</Link>
             </Button>
             
             <Button
