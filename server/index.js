@@ -215,7 +215,47 @@ app.get("/api/contacts", requireAuth, (req, res) => {
     res.status(500).json({ message: "خطأ في تحميل الرسائل" });
   }
 });
+// Server-side Open Graph for blog detail (for link previews)
+app.get(/^\/blog\/(.+)$/i, (req, res, next) => {
+  try {
+    const id = req.params[0];
+    const posts = readPosts();
+    const post = posts.find((p) => p.id === id);
+    if (!post) return next();
 
+    const imageUrlRegex = /https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)/gi;
+    const contentImages = (post.content || '').match(imageUrlRegex) || [];
+    const ogImage = post.image || contentImages[0] || '';
+
+    const siteUrl = (process.env.SITE_URL || '').replace(/\/$/, '');
+    const pageUrl = siteUrl ? `${siteUrl}${req.originalUrl}` : req.originalUrl;
+
+    const html = `<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${post.title}</title>
+    <meta name="description" content="${(post.excerpt || '').replace(/"/g, '\\"')}" />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="${post.title}" />
+    <meta property="og:description" content="${(post.excerpt || '').replace(/"/g, '\\"')}" />
+    ${ogImage ? `<meta property=\"og:image\" content=\"${ogImage}\" />` : ''}
+    <meta property="og:url" content="${pageUrl}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    ${ogImage ? `<meta name=\"twitter:image\" content=\"${ogImage}\" />` : ''}
+    <meta http-equiv="refresh" content="0; url=${req.originalUrl}" />
+    <script>location.replace(${JSON.stringify(req.originalUrl)});</script>
+  </head>
+  <body></body>
+</html>`;
+
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(html);
+  } catch (e) {
+    return next();
+  }
+});
 // SPA fallback to index.html for non-API routes (production)
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
