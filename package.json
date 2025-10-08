@@ -4,6 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "homepage": "https://ahhmedWalid1.github.io/anas-haloul-website",
+  "engines": {
+    "node": ">=18 <=22"
+  },
   
   "scripts": {
     "dev": "vite",
