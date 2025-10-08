@@ -17,24 +17,37 @@ type BlogPost = {
 const BlogDetail = () => {
   const { id } = useParams();
   const [post, setPost] = useState<BlogPost | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string>("");
   const [selectedImageIndex, setSelectedImageIndex] = useState<number | null>(null);
   const [allImages, setAllImages] = useState<string[]>([]);
 
   useEffect(() => {
     if (!id) return;
+    setIsLoading(true);
+    setLoadError("");
     fetch(`/api/posts/${id}`)
-      .then((r) => (r.ok ? r.json() : null))
+      .then(async (r) => {
+        if (!r.ok) {
+          const text = await r.text().catch(() => "");
+          throw new Error(text || `Failed to load post ${id}`);
+        }
+        return r.json();
+      })
       .then((data) => {
         setPost(data);
         if (data) {
-          // Extract all images from content
           const imageUrlRegex = /https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)/gi;
           const contentImages = data.content?.match(imageUrlRegex) || [];
           const images = data.image ? [data.image, ...contentImages] : contentImages;
           setAllImages(images);
         }
       })
-      .catch(() => setPost(null));
+      .catch((e) => {
+        setPost(null);
+        setLoadError(e?.message || "فشل في تحميل الخبر");
+      })
+      .finally(() => setIsLoading(false));
   }, [id]);
 
   const contentBlocks = useMemo(() => (post?.content || "").split(/\n{2,}/g), [post]);
@@ -96,8 +109,16 @@ const BlogDetail = () => {
         </section>
         <section className="py-12 bg-background">
           <div className="container mx-auto px-4 max-w-4xl">
-            {!post ? (
-              <p className="text-muted-foreground">لم يتم العثور على المنشور. <Link to="/blog" className="text-primary">العودة للأخبار</Link></p>
+            {isLoading ? (
+              <p className="text-muted-foreground">جاري تحميل الخبر...</p>
+            ) : !post ? (
+              <div className="text-muted-foreground space-y-2">
+                <p>لم يتم العثور على المنشور.</p>
+                {loadError && <p className="text-destructive text-sm">{loadError}</p>}
+                <p>
+                  <Link to="/blog" className="text-primary">العودة للأخبار</Link>
+                </p>
+              </div>
             ) : (
               <article className="bg-card rounded-xl border border-border overflow-hidden shadow-lg">
                 {post.image && (
@@ -235,5 +256,8 @@ const BlogDetail = () => {
 };
 
 export default BlogDetail;
+
+
+
 
 
