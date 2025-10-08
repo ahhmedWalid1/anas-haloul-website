@@ -215,6 +215,7 @@ app.get("/api/contacts", requireAuth, (req, res) => {
     res.status(500).json({ message: "خطأ في تحميل الرسائل" });
   }
 });
+
 // Server-side Open Graph for blog detail (for link previews)
 app.get(/^\/blog\/(.+)$/i, (req, res, next) => {
   try {
@@ -225,10 +226,14 @@ app.get(/^\/blog\/(.+)$/i, (req, res, next) => {
 
     const imageUrlRegex = /https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|webp)/gi;
     const contentImages = (post.content || '').match(imageUrlRegex) || [];
-    const ogImage = post.image || contentImages[0] || '';
+    const ogImageRel = post.image || contentImages[0] || '';
+    const inferredBase = `${req.protocol}://${req.get('host')}`;
+    const baseUrl = (process.env.SITE_URL || inferredBase).replace(/\/$/, '');
+    const ogImage = ogImageRel
+      ? (ogImageRel.startsWith('http') ? ogImageRel : `${baseUrl}${ogImageRel}`)
+      : (baseUrl ? `${baseUrl}/assets/candidate-portrait.jpg` : '');
 
-    const siteUrl = (process.env.SITE_URL || '').replace(/\/$/, '');
-    const pageUrl = siteUrl ? `${siteUrl}${req.originalUrl}` : req.originalUrl;
+    const pageUrl = baseUrl ? `${baseUrl}${req.originalUrl}` : req.originalUrl;
 
     const html = `<!doctype html>
 <html lang="ar" dir="rtl">
@@ -256,6 +261,7 @@ app.get(/^\/blog\/(.+)$/i, (req, res, next) => {
     return next();
   }
 });
+
 // SPA fallback to index.html for non-API routes (production)
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
