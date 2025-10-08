@@ -8,6 +8,7 @@ import fs from "fs";
 import path from "path";
 
 const app = express();
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5174;
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "changeme";
 
@@ -34,6 +35,15 @@ app.use(bodyParser.json());
 app.use('/uploads', express.static(uploadsDir));
 // Serve frontend build (for production hosting)
 const distDir = path.join(process.cwd(), 'dist');
+let ogHomeAsset = '';
+try {
+  const assetsDir = path.join(distDir, 'assets');
+  if (fs.existsSync(assetsDir)) {
+    const files = fs.readdirSync(assetsDir);
+    const match = files.find((f) => /^candidate-portrait-.*\.jpg$/i.test(f));
+    if (match) ogHomeAsset = path.join(assetsDir, match);
+  }
+} catch {}
 if (fs.existsSync(distDir)) {
   app.use(express.static(distDir));
 }
@@ -249,8 +259,6 @@ app.get(/^\/blog\/(.+)$/i, (req, res, next) => {
     <meta property="og:url" content="${pageUrl}" />
     <meta name="twitter:card" content="summary_large_image" />
     ${ogImage ? `<meta name=\"twitter:image\" content=\"${ogImage}\" />` : ''}
-    <meta http-equiv="refresh" content="0; url=${req.originalUrl}" />
-    <script>location.replace(${JSON.stringify(req.originalUrl)});</script>
   </head>
   <body></body>
 </html>`;
@@ -260,6 +268,45 @@ app.get(/^\/blog\/(.+)$/i, (req, res, next) => {
   } catch (e) {
     return next();
   }
+});
+
+// Dynamic OG for homepage with absolute image URL
+app.get('/', (req, res, next) => {
+  try {
+    const inferredBase = `${req.protocol}://${req.get('host')}`;
+    const baseUrl = (process.env.SITE_URL || inferredBase).replace(/\/$/, '');
+    const ogImageUrl = ogHomeAsset ? `${baseUrl}/og-home.jpg` : `${baseUrl}/favicon.ico`;
+    const html = `<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>أنس هلول - مرشح مجلس النواب عن دائرة أطفيح</title>
+    <meta name="description" content="الموقع الرسمي للمرشح أنس هلول لمجلس النواب المصري عن دائرة أطفيح" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="أنس هلول - مرشح مجلس النواب عن دائرة أطفيح" />
+    <meta property="og:description" content="الموقع الرسمي للمرشح أنس هلول لمجلس النواب المصري عن دائرة أطفيح" />
+    <meta property="og:image" content="${ogImageUrl}" />
+    <meta property="og:url" content="${baseUrl}/" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content="${ogImageUrl}" />
+    <script>location.replace('/');</script>
+  </head>
+  <body></body>
+</html>`;
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.status(200).send(html);
+  } catch {
+    return next();
+  }
+});
+
+// Serve a stable OG image endpoint pointing to built asset
+app.get('/og-home.jpg', (req, res, next) => {
+  if (ogHomeAsset && fs.existsSync(ogHomeAsset)) {
+    return res.sendFile(ogHomeAsset);
+  }
+  return res.status(404).end();
 });
 
 // SPA fallback to index.html for non-API routes (production)
@@ -274,5 +321,6 @@ app.get('*', (req, res, next) => {
 app.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`);
 });
+
 
 
