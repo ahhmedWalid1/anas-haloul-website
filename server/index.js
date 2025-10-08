@@ -14,11 +14,11 @@ const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "changeme";
 // Email configuration (optional - can be disabled)
 let transporter = null;
 try {
-  transporter = nodemailer.createTransporter({
+  transporter = nodemailer.createTransport({
     service: 'gmail',
     auth: {
-      user: 'anas.halou@outlook.com', // This will be updated to use proper email
-      pass: 'your-app-password' // This should be an app-specific password
+      user: process.env.MAIL_USER || 'anas.halou@outlook.com',
+      pass: process.env.MAIL_PASS || 'your-app-password'
     }
   });
 } catch (error) {
@@ -32,6 +32,11 @@ const dataFile = path.join(dataDir, "posts.json");
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/uploads', express.static(uploadsDir));
+// Serve frontend build (for production hosting)
+const distDir = path.join(process.cwd(), 'dist');
+if (fs.existsSync(distDir)) {
+  app.use(express.static(distDir));
+}
 
 // Ensure uploads directory exists
 if (!fs.existsSync(uploadsDir)) {
@@ -209,6 +214,15 @@ app.get("/api/contacts", requireAuth, (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "خطأ في تحميل الرسائل" });
   }
+});
+
+// SPA fallback to index.html for non-API routes (production)
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) return next();
+  if (fs.existsSync(distDir)) {
+    return res.sendFile(path.join(distDir, 'index.html'));
+  }
+  return next();
 });
 
 app.listen(PORT, () => {

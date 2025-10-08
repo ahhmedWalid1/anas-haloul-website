@@ -10,6 +10,8 @@
     "server": "node server/index.js",
     "start": "./start.sh",
     "build": "vite build",
+    "build:prod": "GH_PAGES=false vite build",
+    "serve:prod": "node server/index.js",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
